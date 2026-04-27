@@ -666,9 +666,13 @@ const COMPANY_TYPES = [
 "Consultancy", "Retail / E-commerce", "Other"];
 
 
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQqpae7FWz2LjwbfePmGf-K5zzLQi578Z18gohbzvFWf0opwi3ubQFB0gCs5x3d0fh/exec";
+
 function Form() {
   const [step, setStep] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [data, setData] = useState({
     name: "", email: "", company: "", title: "",
     companyType: "", why: "", linkedin: "",
@@ -699,7 +703,34 @@ function Form() {
 
   const next = () => {if (validate(step)) setStep((s) => s + 1);};
   const back = () => setStep((s) => Math.max(0, s - 1));
-  const submit = () => {if (validate(2)) setSubmitted(true);};
+  const submit = async () => {
+    if (!validate(2)) return;
+    setLoading(true);
+    setSubmitError("");
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          company: data.company,
+          title: data.title,
+          linkedin: data.linkedin,
+          companyType: data.companyType,
+          why: data.why,
+          slots: data.slots.join(", "),
+          consent: data.consent
+        })
+      });
+      setSubmitted(true);
+    } catch (err) {
+      setSubmitError("Something went wrong. Please try again or email crew@onaudience.com.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const slotLabel = useMemo(() => {
     if (!data.slots || data.slots.length === 0) return "";
@@ -866,9 +897,10 @@ function Form() {
         </div>
       }
 
+      {submitError && <div className="err" style={{ marginBottom: 16, fontSize: 14 }}>{submitError}</div>}
       <div className="form-actions">
         {step > 0 ?
-        <button className="btn btn-ghost" onClick={back} type="button">
+        <button className="btn btn-ghost" onClick={back} type="button" disabled={loading}>
             <span style={{ transform: "rotate(180deg)", display: "inline-flex" }}><Arrow /></span> Back
           </button> :
         <span />}
@@ -878,8 +910,9 @@ function Form() {
             Continue <Arrow />
           </button> :
 
-        <button className="btn" onClick={submit} type="button">
-            Register interest <Arrow />
+        <button className="btn" onClick={submit} type="button" disabled={loading}
+          style={{ opacity: loading ? 0.7 : 1 }}>
+            {loading ? "Sending…" : <><span>Register interest</span> <Arrow /></>}
           </button>
         }
       </div>
