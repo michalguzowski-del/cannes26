@@ -666,7 +666,7 @@ const COMPANY_TYPES = [
 "Consultancy", "Retail / E-commerce", "Other"];
 
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQqpae7FWz2LjwbfePmGf-K5zzLQi578Z18gohbzvFWf0opwi3ubQFB0gCs5x3d0fh/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxv-_o9udnbm02IvZcgqL4A6seR1RMmYp9RC7S8xfuo_EYM-LVhMf6ylhyxJGzXDA5X/exec";
 
 function Form() {
   const [step, setStep] = useState(0);
