@@ -711,17 +711,16 @@ function Form() {
       await fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+        body: new URLSearchParams({
           name: data.name,
           email: data.email,
           company: data.company,
           title: data.title,
-          linkedin: data.linkedin,
+          linkedin: data.linkedin || "",
           companyType: data.companyType,
           why: data.why,
           slots: data.slots.join(", "),
-          consent: data.consent
+          consent: data.consent ? "Yes" : "No"
         })
       });
       setSubmitted(true);
